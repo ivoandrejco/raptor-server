@@ -10,25 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import sys, os
 from pathlib import Path
+#from django.contrib.auth.models import User
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(1, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's%r+xueo1i-r)s&*mj*n3(3%*z5ltailk-mved*z!@e*^8poa+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.1.122',
+        "*",
         ]
 
+#AUTH_USER_MODEL=User
 
 # Application definition
 
@@ -39,9 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'patients',
+    'django_filters',
     'rest_framework',
     'corsheaders',
+    'apps.billings.apps.BillingsConfig',
+    'apps.doctors.apps.DoctorsConfig',
+    'apps.practices.apps.PracticesConfig',
+    'apps.medications.apps.MedicationsConfig',
+    'apps.patients.apps.PatientsConfig',
+    'apps.tasks.apps.TasksConfig',
+    'apps.comorbidities.apps.ComorbiditiesConfig',
+    'apps.consultations.apps.ConsultationsConfig',
+    'apps.templates.apps.TemplatesConfig',
+    'apps.socialhx.apps.SocialhxConfig',
+    'apps.diagnoses.apps.DiagnosesConfig',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +68,15 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
 CORS_ALLOW_CREDENTIALS = True
+ENTER_P    = 1 # default
+ENTER_BR   = 3
+ENTER_DIV  = 2
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'enterMode': ENTER_DIV,
+    },
+}
 ROOT_URLCONF = 'raptor.urls'
 
 TEMPLATES = [
@@ -81,21 +100,6 @@ WSGI_APPLICATION = 'raptor.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    },
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'raptor',
-        'USER': 'ivo',
-        'PASSWORD': 'Sophie20_*08?',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 
 
 # Password validation
@@ -125,6 +129,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    )
 }
 
 # Internationalization
@@ -145,4 +152,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT= '/home/ivo/public_html/static/'
+#STATIC_ROOT= '/home/ivo/public_html/static/'
