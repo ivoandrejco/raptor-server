@@ -1,2 +1,2 @@
 from .django import *
-from .local import *
+from .raptor import *
