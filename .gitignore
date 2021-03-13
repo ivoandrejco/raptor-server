@@ -1,6 +1,5 @@
 *~
 __pycache__
-migrations
 raptor/settings/local.py
 .DS_Store
 .xlsx
