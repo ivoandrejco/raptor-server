@@ -155,24 +155,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 #STATIC_ROOT= '/home/ivo/public_html/static/'
 
-
-STATIC_ROOT= '/Users/ivo/Public/static/'
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's%r+xueo1i-r)s&*mj*n3(3%*z5ltailk-mved*z!@e*^8poa+'
-
-DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    },
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'raptor',
-        'USER': 'ivo',
-        'PASSWORD': 'Sophie20_*08?',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
-
-
