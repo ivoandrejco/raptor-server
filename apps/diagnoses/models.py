@@ -7,7 +7,7 @@ from patients.models import Patient
 class Diagnosis(models.Model):
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     pid         = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="diagnoses",verbose_name="Patient")
-    kind       = models.CharField(max_length=10, verbose_name="Type",choices=(("Issue","Issue"),("Diagnosis","Diagnosis")))
+    kind        = models.CharField(max_length=10, verbose_name="Type",choices=(("Issue","Issue"),("Diagnosis","Diagnosis")))
     title       = models.CharField(max_length=100)
     description = models.TextField(blank=True,null=True)
     created_on  = models.DateField()
