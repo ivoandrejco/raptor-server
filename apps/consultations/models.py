@@ -12,24 +12,25 @@ from diagnoses.models import Diagnosis
 # Create your models here.
 class Consultation(models.Model):
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pid         = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="consultation_pid", verbose_name="Patient")
+    patient     = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="consultation_pid", verbose_name="Patient")
     code        = models.IntegerField()
     provider    = models.ForeignKey(ProviderNumber,on_delete=models.CASCADE,related_name="provider_consultations",verbose_name="Provider")
-    presentation = models.TextField(blank=True,null=True)
-    plan          = models.TextField(blank=True,null=True)
+    history     = models.TextField()
+    impression  = models.TextField(blank=True,null=True)
+    plan        = models.TextField()
     created_on  = models.DateTimeField()
     created_by  = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="consultation_created_by")
 
     class Meta:
         verbose_name_plural = "Consultations"
         ordering            = ['-created_on']
-        unique_together     = ['pid','code','created_on']
+        unique_together     = ['patient','code','created_on']
 
     def get_absolute_url(self):
         return reverse('consultation-view', args=[str(self.id)])    
 
     def __str__(self):
-        return f'{self.pid}: {self.code} {self.created_on}'
+        return f'{self.patient}: {self.code} {self.created_on}'
 
 class Issue(models.Model):
     id             = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

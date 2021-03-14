@@ -102,7 +102,7 @@ class ConsultationsSerializer(serializers.ModelSerializer):
     #letters     = LettersSerializer(many=True,read_only=True)
     #provider    = ProviderNumberSerializer(read_only=True)
 
-    pid         = PatientField()
+    patient     = PatientField()
     provider    = ProviderField()
 
     def create(self, validated_data):
@@ -113,5 +113,5 @@ class ConsultationsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Consultation
-        fields = ['id', 'pid','code','provider','presentation', 'plan','created_on']
+        fields = ['id', 'patient','code','provider','history','impression', 'plan','created_on']
         
