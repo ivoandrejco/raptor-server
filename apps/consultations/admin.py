@@ -14,7 +14,7 @@ class ConsultationAdmin(admin.ModelAdmin):
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
-  list_display = ['patient','created_on','title','presentation', 'conclusion', 'comment','value','created_on']
+  list_display = ['patient','created_on','title','presentation', 'created_on']
 
   def created_on(self,obj):
     return obj.cid.created_on

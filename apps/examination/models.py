@@ -9,7 +9,7 @@ def BMI(h,w):
     if h==0 or w==0:
         return 0
 
-    return w/pow(h,2)
+    return round(w/pow(h/100,2),1)
 
 def IBW(g,h):
     if h==0:
@@ -29,18 +29,18 @@ def BSA_D(h,w):
     if h==0 or w==0:
         return 0
 
-    return 0.007184 * pow(h,0.725) * pow(w,0.425)
+    return round(0.007184 * pow(h,0.725) * pow(w,0.425),2)
 
-def BSA_M(h,w)
+def BSA_M(h,w):
     if h==0 or w==0:
         return 0
 
-    return sqrt(h*w/3600)
+    return round(sqrt(h*w/3600),2)
 
 # Create your models here.
 class Examination(models.Model):
     id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pid           = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="examinations",verbose_name="Patient")
+    patient       = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="examinations",verbose_name="Patient")
     weight        = models.FloatField(blank=True,null=True)
     height        = models.FloatField(blank=True,null=True)
     BMI           = models.FloatField(blank=True,null=True)
@@ -59,20 +59,40 @@ class Examination(models.Model):
     created_by    = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="examination_created_by")
 
     def save(self,*args,**kwargs):
-        h = self.height
-        w = self.weight
+        h           = self.height
+        w           = self.weight
+        patient     = Patient.objects.get(pk=self.patient.id)
+        gender      = patient.gender
 
-        self.BSA_D = BSA_D(h,w)
-        self.BSA_M = BSA_M(h,w)
+        self.BSA_D  = BSA_D(h,w)
+        self.BSA_M  = BSA_M(h,w)
+        self.BMI    = BMI(h,w)
+        self.IBW    = IBW(gender,h)
+        self.ABW    = ABW(gender,h,w)
+
         super().save(*args,**kwargs)
+
+    def update(self,*args,**kwargs):
+        h           = self.height
+        w           = self.weight
+        patient     = Patient.objects.get(pk=self.patient.id)
+        gender      = patient.gender
+
+        self.BSA_D  = BSA_D(h,w)
+        self.BSA_M  = BSA_M(h,w)
+        self.BMI    = BMI(h,w)
+        self.IBW    = IBW(gender,h)
+        self.ABW    = ABW(gender,h,w)
+
+        super().update(*args,**kwargs)
 
     class Meta:
         verbose_name_plural = "Examinations"
         ordering            = ['-collected_on']
-        unique_together     = ['pid','collected_on']
+        unique_together     = ['patient','collected_on']
 
     def get_absolute_url(self):
         return reverse('examination-view', args=[str(self.id)])    
 
     def __str__(self):
-        return f'Examination: {self.pid} - {self.collected_on}'
+        return f'Examination: {self.patient} - {self.collected_on}'
