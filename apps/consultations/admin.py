@@ -6,7 +6,7 @@ from diagnoses.models import Diagnosis
 # Register your models here.
 @admin.register(Consultation)
 class ConsultationAdmin(admin.ModelAdmin):
-  list_display = ['patient','code','created_on','provider','conclusion']
+  list_display = ['patient','code','created_on','provider']
 
   def patient(self,obj):
     return obj.pid

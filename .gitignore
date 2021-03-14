@@ -4,3 +4,4 @@ raptor/settings/local.py
 .DS_Store
 .xlsx
 .vscode
+*swp

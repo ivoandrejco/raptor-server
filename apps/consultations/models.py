@@ -15,14 +15,7 @@ class Consultation(models.Model):
     pid         = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="consultation_pid", verbose_name="Patient")
     code        = models.IntegerField()
     provider    = models.ForeignKey(ProviderNumber,on_delete=models.CASCADE,related_name="provider_consultations",verbose_name="Provider")
-    weight      = models.FloatField(blank=True,null=True)
-    height      = models.FloatField(blank=True,null=True)
-    pulse       = models.CharField(max_length=50,blank=True,null=True)
-    BP          = models.CharField(max_length=8,blank=True,null=True,verbose_name="Blood Pressure")
     presentation = models.TextField(blank=True,null=True)
-    examination = models.TextField(blank=True,null=True)
-    conclusion  = models.TextField(blank=True,null=True)
-    presentation  = models.TextField(blank=True,null=True)
     plan          = models.TextField(blank=True,null=True)
     created_on  = models.DateTimeField()
     created_by  = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="consultation_created_by")
@@ -40,13 +33,12 @@ class Consultation(models.Model):
 
 class Issue(models.Model):
     id             = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cid            = models.ForeignKey(Consultation,on_delete=models.CASCADE,related_name="issues", verbose_name="Consultation")
+    pid            = models.ForeignKey(Consultation,on_delete=models.CASCADE,related_name="issues", verbose_name="Consultation")
     tid            = models.ForeignKey(TemplateIssue,on_delete=models.SET_NULL,related_name="template_issue", null=True, blank=True, verbose_name="Template")
-    title          = models.CharField(max_length=50)
-    comment        = models.TextField(blank=True,null=True)
     json           = models.JSONField(null=True,blank=True)
     tags           = models.TextField(blank=True,null=True)
     value          = models.TextField(blank=True,null=True)
+    title          = models.CharField(max_length=50)
     presentation   = models.TextField(null=True,blank=True)
     conclusion     = models.TextField(null=True,blank=True)
     updated_on     = models.DateField()
@@ -56,7 +48,7 @@ class Issue(models.Model):
     class Meta:
         verbose_name_plural = "Issues"
         ordering            = ['-updated_on','-created_on']
-        unique_together     = ['cid','title','created_on']
+        unique_together     = ['pid','title','created_on']
 
     def get_absolute_url(self):
         return reverse('issue-view', args=[str(self.id)])    

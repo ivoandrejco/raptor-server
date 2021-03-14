@@ -98,8 +98,8 @@ class ProviderField(serializers.RelatedField):
 
 class ConsultationsSerializer(serializers.ModelSerializer):
     created_on  = serializers.ReadOnlyField()
-    issues      = IssuesSerializer(many=True,read_only=True)
-    letters     = LettersSerializer(many=True,read_only=True)
+    #issues      = IssuesSerializer(many=True,read_only=True)
+    #letters     = LettersSerializer(many=True,read_only=True)
     #provider    = ProviderNumberSerializer(read_only=True)
 
     pid         = PatientField()
@@ -113,5 +113,5 @@ class ConsultationsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Consultation
-        fields = ['id', 'pid','code','provider','weight','height','BP','pulse','examination','presentation', 'plan','conclusion','issues','letters','created_on']
+        fields = ['id', 'pid','code','provider','presentation', 'plan','created_on']
         

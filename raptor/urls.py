@@ -31,6 +31,7 @@ from consultations.views import ConsultationsViewSet, IssuesViewSet, LettersView
 from socialhx.views import SocialHxViewSet
 from templates.views import InvestigationsViewSet as TemplateInvestigationsViewSet, IssuesViewSet as TemplateIssuesViewSet
 from diagnoses.views import DiagnosesViewSet
+from examination.views import ExaminationViewSet
 
 def response_notfound_handler(request, exception=None):
     return HttpResponse('<h1>Not found</h1>',status=404)
@@ -58,9 +59,10 @@ router.register(r'diagnoses', DiagnosesViewSet)
 router.register(r'investigations', InvestigationsViewSet)
 router.register(r'templates/issues',TemplateIssuesViewSet)
 router.register(r'templates/investigations',TemplateInvestigationsViewSet)
+router.register(r'examination', ExaminationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
