@@ -4,6 +4,7 @@ from math import pow, sqrt
 from django.db import models
 from django.contrib.auth.models import User
 from patients.models import Patient
+from consultations.models import Consultation
 
 def BMI(h,w):
     if h==0 or w==0:
@@ -40,7 +41,7 @@ def BSA_M(h,w):
 # Create your models here.
 class Examination(models.Model):
     id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    patient       = models.ForeignKey(Patient,on_delete=models.CASCADE,related_name="examinations",verbose_name="Patient")
+    consultation  = models.ForeignKey(Consultation,on_delete=models.CASCADE,related_name="examinations",verbose_name="Consultation")
     weight        = models.FloatField(blank=True,null=True)
     height        = models.FloatField(blank=True,null=True)
     BMI           = models.FloatField(blank=True,null=True)
@@ -61,7 +62,7 @@ class Examination(models.Model):
     def save(self,*args,**kwargs):
         h           = self.height
         w           = self.weight
-        patient     = Patient.objects.get(pk=self.patient.id)
+        patient     = Patient.objects.get(pk=self.consultation.patient)
         gender      = patient.gender
 
         self.BSA_D  = BSA_D(h,w)
@@ -75,7 +76,7 @@ class Examination(models.Model):
     def update(self,*args,**kwargs):
         h           = self.height
         w           = self.weight
-        patient     = Patient.objects.get(pk=self.patient.id)
+        patient     = Patient.objects.get(pk=self.consultation.patient)
         gender      = patient.gender
 
         self.BSA_D  = BSA_D(h,w)
@@ -89,10 +90,10 @@ class Examination(models.Model):
     class Meta:
         verbose_name_plural = "Examinations"
         ordering            = ['-collected_on']
-        unique_together     = ['patient','collected_on']
+        unique_together     = ['consultation','collected_on']
 
     def get_absolute_url(self):
         return reverse('examination-view', args=[str(self.id)])    
 
     def __str__(self):
-        return f'Examination: {self.patient} - {self.collected_on}'
+        return f'Examination: {self.consultation.patient} - {self.collected_on}'

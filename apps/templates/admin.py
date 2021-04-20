@@ -4,7 +4,7 @@ from .models import Investigation, Issue
 # Register your models here.
 @admin.register(Investigation)
 class InvestigationAdmin(admin.ModelAdmin):
-  list_display = ['id','title','json','tags','comment']
+  list_display = ['id','title','json']
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):

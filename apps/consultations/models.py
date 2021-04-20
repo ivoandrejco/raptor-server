@@ -1,11 +1,11 @@
 import uuid
+from math import pow, sqrt
+
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from patients.models import Patient
-from templates.models import Investigation as TemplateInvestigation, Issue as TemplateIssue
 from doctors.models import ProviderNumber
-from diagnoses.models import Diagnosis
 
 
 
@@ -32,53 +32,6 @@ class Consultation(models.Model):
     def __str__(self):
         return f'{self.patient}: {self.code} {self.created_on}'
 
-class Issue(models.Model):
-    id             = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pid            = models.ForeignKey(Consultation,on_delete=models.CASCADE,related_name="issues", verbose_name="Consultation")
-    tid            = models.ForeignKey(TemplateIssue,on_delete=models.SET_NULL,related_name="template_issue", null=True, blank=True, verbose_name="Template")
-    json           = models.JSONField(null=True,blank=True)
-    tags           = models.TextField(blank=True,null=True)
-    value          = models.TextField(blank=True,null=True)
-    title          = models.CharField(max_length=50)
-    presentation   = models.TextField(null=True,blank=True)
-    conclusion     = models.TextField(null=True,blank=True)
-    updated_on     = models.DateField()
-    created_on     = models.DateField()
-    created_by     = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="issue_created_by")
-
-    class Meta:
-        verbose_name_plural = "Issues"
-        ordering            = ['-updated_on','-created_on']
-        unique_together     = ['pid','title','created_on']
-
-    def get_absolute_url(self):
-        return reverse('issue-view', args=[str(self.id)])    
-
-    def __str__(self):
-        return f'{self.title}'
-
-class Investigation(models.Model):
-    id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    iid             = models.ForeignKey(Issue,on_delete=models.CASCADE,related_name="investigations", verbose_name="Issue")
-    tid             = models.ForeignKey(TemplateInvestigation,on_delete=models.SET_NULL,related_name="template_investigation", null=True, blank=True, verbose_name="Template")
-    title           = models.CharField(max_length=50)
-    json            = models.JSONField(null=True,blank=True)
-    value           = models.TextField(null=True,blank=True)
-    comment         = models.TextField(null=True,blank=True)
-    updated_on      = models.DateField()
-    created_on      = models.DateField()
-    created_by      = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="investigation_created_by")
-
-    class Meta:
-        verbose_name_plural = "Investigations"
-        ordering            = ['-title']
-        unique_together     = ['iid','title','created_on']
-
-    def get_absolute_url(self):
-        return reverse('investigation-view', args=[str(self.id)])    
-
-    def __str__(self):
-        return f'{self.title}'
 
 LETTER_CHOICES = (
   ('Pending','Pending'),
@@ -106,3 +59,110 @@ class Letter(models.Model):
 
   def __str__(self):
        return f'Letter: {self.cid} - {self.created_on} {self.title}'
+
+
+
+
+
+
+
+######################################
+#       EXAMINATION MODEL 
+######################################
+
+def is_number(n):
+    return isinstance(n,(int,float)) and n > 0
+
+def check_params(func):
+    def wrapper(h,w):
+        if is_number(h) and is_number(w):
+            return func(h,w)
+        return None
+    return wrapper
+
+
+def IBW(h,g):
+    if is_number(h) is False:
+        return None
+
+    if g=='Male':
+        return 50 + 0.9 * (h-152)
+    elif g=='Female':
+        return 45.5 + 0.9 * (h-152)
+
+    return None
+
+def ABW(h,w,g):
+    if is_number(h) and is_number(w):
+        return IBW(h,g) + 0.4 * (w-IBW(h,g))
+    return None
+
+@check_params
+def BMI(h,w):
+    return round(w/pow(h/100,2),1)
+
+@check_params
+def BSA_D(h,w):
+    return round(0.007184 * pow(h,0.725) * pow(w,0.425),2)
+
+@check_params
+def BSA_M(h,w):
+    return round(sqrt(h*w/3600),2)
+
+# Create your models here.
+class Examination(models.Model):
+    id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    consultation  = models.ForeignKey(Consultation,on_delete=models.CASCADE,related_name="examinations",verbose_name="Consultation")
+    weight        = models.FloatField(blank=True,null=True)
+    height        = models.FloatField(blank=True,null=True)
+    BMI           = models.FloatField(blank=True,null=True)
+    IBW           = models.FloatField(blank=True,null=True,verbose_name='Ideal Body Weight')
+    ABW           = models.FloatField(blank=True,null=True,verbose_name='Adjusted Body Weight')
+    BSA_D         = models.FloatField(blank=True,null=True,verbose_name='Body Surface Area(Dubois)')
+    BSA_M         = models.FloatField(blank=True,null=True,verbose_name='Body Surface Area(Mosteller)')
+    pulse         = models.IntegerField(blank=True,null=True)
+    pulse_desc    = models.CharField(max_length=8,blank=True,null=True,verbose_name="Pulse Description")
+    BP            = models.CharField(max_length=8,blank=True,null=True,verbose_name="Blood Pressure")
+    temp          = models.FloatField(blank=True,null=True)
+    sats          = models.IntegerField(blank=True,null=True)
+    sats_desc     = models.CharField(max_length=30,blank=True,null=True,verbose_name="Saturation Description")
+    findings      = models.TextField(blank=True,null=True,verbose_name="Findings")
+    collected_on  = models.DateField()
+    updated_on    = models.DateField()
+    created_by    = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="examination_created_by")
+
+    def save(self,*args,**kwargs):
+        h           = self.height
+        w           = self.weight
+        g           = self.consultation.patient.gender
+
+        self.BSA_D  = BSA_D(h,w)
+        self.BSA_M  = BSA_M(h,w)
+        self.BMI    = BMI(h,w)
+        self.IBW    = IBW(h,g)
+        self.ABW    = ABW(h,w,g)
+        super().save(*args,**kwargs)
+
+    def update(self,*args,**kwargs):
+        h           = self.height
+        w           = self.weight
+        g           = self.consultation.patient.gender
+
+        self.BSA_D  = BSA_D(h,w)
+        self.BSA_M  = BSA_M(h,w)
+        self.BMI    = BMI(h,w)
+        self.IBW    = IBW(h,g)
+        self.ABW    = ABW(h,w,g)
+
+        super(Examination,self).update(*args,**kwargs)
+
+    class Meta:
+        verbose_name_plural = "Examinations"
+        ordering            = ['-collected_on']
+        unique_together     = ['consultation','collected_on']
+
+    def get_absolute_url(self):
+        return reverse('examination-view', args=[str(self.id)])    
+
+    def __str__(self):
+        return f'Examination: {self.consultation.patient} - {self.collected_on}'

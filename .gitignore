@@ -5,3 +5,4 @@ raptor/settings/local.py
 .xlsx
 .vscode
 *swp
+*docx

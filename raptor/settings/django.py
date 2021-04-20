@@ -53,13 +53,13 @@ INSTALLED_APPS = [
     'apps.templates.apps.TemplatesConfig',
     'apps.socialhx.apps.SocialhxConfig',
     'apps.diagnoses.apps.DiagnosesConfig',
-    'apps.examination.apps.ExaminationConfig',
+    'apps.schemas.apps.SchemaConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',    
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

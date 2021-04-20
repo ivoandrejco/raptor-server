@@ -27,11 +27,11 @@ from doctors.urls import ProviderNumberViewSet
 from medications.views import AllergiesViewSet, MedicationsViewSet
 from comorbidities.views import ComorbiditiesViewSet
 from tasks.views import TasksViewSet
-from consultations.views import ConsultationsViewSet, IssuesViewSet, LettersViewSet, InvestigationsViewSet
+from consultations.views import ConsultationsViewSet, LettersViewSet, ExaminationViewSet
 from socialhx.views import SocialHxViewSet
 from templates.views import InvestigationsViewSet as TemplateInvestigationsViewSet, IssuesViewSet as TemplateIssuesViewSet
-from diagnoses.views import DiagnosesViewSet
-from examination.views import ExaminationViewSet
+from diagnoses.views import DiagnosesViewSet, InvestigationsViewSet
+from schemas.views import SchemasViewSet
 
 def response_notfound_handler(request, exception=None):
     return HttpResponse('<h1>Not found</h1>',status=404)
@@ -50,16 +50,16 @@ router.register(r'providernumbers', ProviderNumberViewSet)
 router.register(r'allergies', AllergiesViewSet)
 router.register(r'medications', MedicationsViewSet)
 router.register(r'comorbidities',ComorbiditiesViewSet)
+router.register(r'socialhx',SocialHxViewSet)
 router.register(r'tasks',TasksViewSet)
 router.register(r'consultations',ConsultationsViewSet)
-router.register(r'issues',IssuesViewSet)
-router.register(r'socialhx',SocialHxViewSet)
+router.register(r'examinations', ExaminationViewSet)
 router.register(r'letters',LettersViewSet)
 router.register(r'diagnoses', DiagnosesViewSet)
 router.register(r'investigations', InvestigationsViewSet)
+router.register(r'schemas', SchemasViewSet)
 router.register(r'templates/issues',TemplateIssuesViewSet)
 router.register(r'templates/investigations',TemplateInvestigationsViewSet)
-router.register(r'examination', ExaminationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

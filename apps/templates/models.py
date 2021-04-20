@@ -35,8 +35,8 @@ class Investigation(models.Model):
     title         = models.CharField(max_length=50)
     slug          = models.TextField(null=True,blank=True)
     json          = models.JSONField()
-    tags          = models.TextField(blank=True,null=True)
-    comment       = models.TextField(blank=True,null=True)
+    updated_on    = models.DateField()
+    created_on    = models.DateField()
     created_by    = models.ForeignKey(User,default=1,on_delete=models.CASCADE,related_name="investigation_templates")
 
     class Meta:

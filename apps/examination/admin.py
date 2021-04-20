@@ -8,5 +8,5 @@ class ExaminationAdmin(admin.ModelAdmin):
     list_display = ['patient','collected_on','weight','height','BMI','IBW','ABW','BSA_D','BSA_M','BP','pulse']
 
     def patient(self,obj):
-        return obj.pid
+        return obj.consultation.patient
 

@@ -25,7 +25,6 @@ class MedicationsSerializer(serializers.ModelSerializer):
             validated_data['ceased_on'] = None
                 
         validated_data['reviewed_on'] = date.today()
-        print(validated_data)
         return super().update(instance,validated_data)
         
     def partial_update(self, instance, validated_data):
